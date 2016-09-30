@@ -85,7 +85,8 @@ an alist that supports the keys `:right-align' and `:pad-right'."
               (?u "Update"     magit-submodule-update)
               (?U "Update all" magit-submodule-update-all)
               (?F "Pull"       magit-submodule-update-remote)
-              (?R "Pull all"   magit-submodule-update-all-remote) nil
+              (?R "Pull all"   magit-submodule-update-all-remote)
+              (?f "Fetch"      magit-submodule-fetch)
               (?f "Fetch all"  magit-submodule-fetch))
   :max-action-columns 2)
 
