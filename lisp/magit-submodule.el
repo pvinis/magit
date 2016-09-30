@@ -74,13 +74,19 @@ an alist that supports the keys `:right-align' and `:pad-right'."
   "Popup console for submodule commands."
   'magit-commands nil nil
   :man-page "git-submodule"
-  :actions  '((?a "Add"    magit-submodule-add)
+  :actions  '("Setup"
+              (?a "Add"    magit-submodule-add)
               (?b "Setup"  magit-submodule-setup)
+              "Configure"
               (?i "Init"   magit-submodule-init)
-              (?u "Update" magit-submodule-update)
               (?s "Sync"   magit-submodule-sync)
-              (?f "Fetch"  magit-submodule-fetch)
-              (?d "Deinit" magit-submodule-deinit)))
+              (?d "Deinit" magit-submodule-deinit)
+              "Update"
+              (?u "Update" magit-submodule-update)
+              (?f "Fetch"  magit-submodule-fetch))
+  :max-action-columns 1)
+
+;;;; Setup
 
 ;;;###autoload
 (defun magit-submodule-add (url &optional path name)
@@ -129,12 +135,32 @@ PATH also becomes the name."
         (magit-run-git-async "submodule" "update" "--init" "--" it)
       (message "All submodules already setup"))))
 
+;;;; Configure
+
 ;;;###autoload
 (defun magit-submodule-init ()
   "Register submodules listed in \".gitmodules\" into \".git/config\"."
   (interactive)
   (magit-with-toplevel
     (magit-run-git-async "submodule" "init")))
+
+;;;###autoload
+(defun magit-submodule-sync ()
+  "Update each submodule's remote URL according to \".gitmodules\"."
+  (interactive)
+  (magit-with-toplevel
+    (magit-run-git-async "submodule" "sync")))
+
+;;;###autoload
+(defun magit-submodule-deinit (path)
+  "Unregister the submodule at PATH."
+  (interactive
+   (list (magit-completing-read "Deinit module" (magit-get-submodules)
+                                nil t nil nil (magit-section-when module))))
+  (magit-with-toplevel
+    (magit-run-git-async "submodule" "deinit" path)))
+
+;;;; Update
 
 ;;;###autoload
 (defun magit-submodule-update (&optional init)
@@ -145,13 +171,6 @@ With a prefix argument also register submodules in \".git/config\"."
     (magit-run-git-async "submodule" "update" (and init "--init"))))
 
 ;;;###autoload
-(defun magit-submodule-sync ()
-  "Update each submodule's remote URL according to \".gitmodules\"."
-  (interactive)
-  (magit-with-toplevel
-    (magit-run-git-async "submodule" "sync")))
-
-;;;###autoload
 (defun magit-submodule-fetch (&optional all)
   "Fetch all submodules.
 With a prefix argument fetch all remotes."
@@ -159,15 +178,6 @@ With a prefix argument fetch all remotes."
   (magit-with-toplevel
     (magit-run-git-async "submodule" "foreach"
                          (format "git fetch %s || true" (if all "--all" "")))))
-
-;;;###autoload
-(defun magit-submodule-deinit (path)
-  "Unregister the submodule at PATH."
-  (interactive
-   (list (magit-completing-read "Deinit module" (magit-get-submodules)
-                                nil t nil nil (magit-section-when module))))
-  (magit-with-toplevel
-    (magit-run-git-async "submodule" "deinit" path)))
 
 ;;; Sections
 
