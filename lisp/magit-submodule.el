@@ -77,12 +77,8 @@ an alist that supports the keys `:right-align' and `:pad-right'."
   :actions  '("Setup"
               (?a "Add"    magit-submodule-add) nil
               (?b "Setup"  magit-submodule-setup) nil
-              "Configure"
-              (?i "Init"   magit-submodule-init) nil
-              (?s "Sync"   magit-submodule-sync) nil
               (?d "Deinit" magit-submodule-deinit) nil
-              (?e "Edit .gitmodules" magit-submodule-edit-gitsubmodules) nil
-              (?E "Edit .git/config" magit-submodule-edit-config) nil
+              (?C "Configure" magit-submodule-config-popup) nil
               "Update"
               (?u "Update"     magit-submodule-update)
               (?U "Update all" magit-submodule-update-all)
@@ -142,6 +138,17 @@ PATH also becomes the name."
       (message "All submodules already setup"))))
 
 ;;;; Configure
+
+(magit-define-popup magit-submodule-config-popup
+  "Configure submodule related git variables."
+  'magit-commands nil nil
+  :man-page "git-submodule"
+  :actions '((?e "Edit .gitmodules" magit-submodule-edit-gitsubmodules)
+             (?E "Edit .git/config" magit-submodule-edit-config)
+             (?i "Copy missing settings from .gitmodules to .git/config"
+                 magit-subdmodule-init)
+             (?s "Update url from .gitmodules to .git/config"
+                 magit-submodule-sync)))
 
 ;;;###autoload
 (defun magit-submodule-init ()
