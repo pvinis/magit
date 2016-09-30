@@ -81,6 +81,8 @@ an alist that supports the keys `:right-align' and `:pad-right'."
               (?i "Init"   magit-submodule-init) nil
               (?s "Sync"   magit-submodule-sync) nil
               (?d "Deinit" magit-submodule-deinit) nil
+              (?e "Edit .gitmodules" magit-submodule-edit-gitsubmodules) nil
+              (?E "Edit .git/config" magit-submodule-edit-config) nil
               "Update"
               (?u "Update"     magit-submodule-update)
               (?U "Update all" magit-submodule-update-all)
@@ -163,6 +165,18 @@ PATH also becomes the name."
                                 nil t nil nil (magit-section-when module))))
   (magit-with-toplevel
     (magit-run-git-async "submodule" "deinit" path)))
+
+;;;###autoload
+(defun magit-submodule-edit-gitsubmodules ()
+  (interactive)
+  "Edit \".gitmodules\"."
+  (find-file ".gitmodules"))
+
+;;;###autoload
+(defun magit-submodule-edit-config ()
+  (interactive)
+  "Edit \".git/config\"."
+  (find-file (magit-git-dir "config")))
 
 ;;;; Update
 
