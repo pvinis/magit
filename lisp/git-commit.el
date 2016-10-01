@@ -654,7 +654,7 @@ Added to `font-lock-extend-region-functions'."
     (eval . `(,(format "^%s.*" comment-start)
               (0 'font-lock-comment-face)))
     (eval . `(,(format "^%s On branch \\(.*\\)" comment-start)
-              (1 'git-commit-comment-branch t)))
+              (1 'magit-branch-local t)))
     (eval . `(,(format "^%s Not currently on any branch." comment-start)
               (1 'git-commit-comment-detached t)))
     (eval . `(,(format "^%s %s" comment-start
@@ -678,35 +678,37 @@ Added to `font-lock-extend-region-functions'."
               (2 'git-commit-overlong-summary t t)
               (3 'git-commit-nonempty-second-line t t)))))
 
+;; see sgml-font-lock-keywords-2 as example
+
 (defconst git-commit-font-lock-keywords-2
-  `(,@git-commit-font-lock-keywords-1
+  `(;;,@git-commit-font-lock-keywords-1
+    ;; (eval
+    ;;  . (cons (format "^%s\t\\(?:\\([^:\n]+\\):\\s-+\\)?\\(.*\\)"
+    ;;                  comment-start)
+    ;;          '((1 'git-commit-comment-action t t)
+    ;;            (2 'git-commit-comment-file t))))
     (eval
-     . `(,(format "^%s\t\\(?:\\([^:\n]+\\):\\s-+\\)?\\(.*\\)"
-                  comment-start)
-         (1 'git-commit-comment-action t t)
-         (2 'git-commit-comment-file t)))
-    (eval
-     . `(,(format
-           "^%s Your branch \\(?:is up-to-date with\\|and\\) '\\([^']*\\)'"
-           comment-start)
-         (2 'git-commit-comment-branch t)))
-    (eval
-     . `(,(format
-           "^%s Your branch \\(?:is ahead of\\|is behind of\\) '\\([^']*\\)'"
-           comment-start)
-         (2 'git-commit-comment-branch t)))))
+     . (cons (format "^%s Your branch %s '%s'"
+                     comment-start
+                     (regexp-opt (list "is ahead of" "is behind of"
+                                       "is up-to-date with" "and"))
+                     git-commit-branch-regexp)
+             '((1 'magit-branch-local t)
+               (2 'magit-branch-remote t))))))
 
-(defconst git-commit-font-lock-keywords-3
-  `(,@git-commit-font-lock-keywords-2
-    (eval
-     . `(,(format
-           "^%s Your branch \\(?:is ahead of\\|is behind of\\) '[^']*' by \\([0-9]*\\)"
-           comment-start)
-         (1 'git-commit-comment-branch t)
-         (2 'bold t)))))
+;; (defconst git-commit-font-lock-keywords-3
+;;   `(,@git-commit-font-lock-keywords-2
+;;     (eval
+;;      . `(,(format
+;;            "^%s Your branch is \\(?:ahead\\|behind\\) of '[^']*' by \\([0-9]*\\)"
+;;            comment-start)
+;;          (1 'git-commit-comment-branch t)
+;;          (2 'bold t)))))
 
-(defvar git-commit-font-lock-keywords git-commit-font-lock-keywords-2
+(defconst git-commit-font-lock-keywords git-commit-font-lock-keywords-2
   "Font-Lock keywords for Git-Commit mode.")
+
+(defvar git-commit-branch-regexp nil)
 
 (defun git-commit-setup-font-lock ()
   (let ((table (make-syntax-table (syntax-table))))
@@ -724,10 +726,23 @@ Added to `font-lock-extend-region-functions'."
   (setq-local comment-start-skip (format "^%s+[\s\t]*" comment-start))
   (setq-local comment-end-skip "\n")
   (setq-local comment-use-syntax nil)
-  (setq-local font-lock-multiline t)
-  (add-hook 'font-lock-extend-region-functions
-            #'git-commit-extend-region-summary-line
-            t t)
+  (setq-local git-commit-branch-regexp
+              ;; FIXME Remote branches do not get highlighted, not
+              ;; even if I hard code this for testing purposes:
+              ;;   "\\(?:\\(master\\)\\|\\(origin/master\\)\\)"
+              ;; But when I test such regexps using `re-builder',
+              ;; then they work as expected.  WTF is going on?
+              ;;   # Your branch is ahead of 'submatch/two'
+              ;;   "# Your branch is ahead of '\\(?:\\(master\\)\\|\\(submatch/two\\)\\)'"
+              (format "\\(?:%s\\|%s\\)"
+                      (regexp-opt (magit-list-local-branch-names)  1)
+                      (regexp-opt (magit-list-remote-branch-names) 1))
+              )
+  ;; This does not appear to be the cause.
+  ;; (setq-local font-lock-multiline t)
+  ;; (add-hook 'font-lock-extend-region-functions
+  ;;           #'git-commit-extend-region-summary-line
+  ;;           t t)
   (font-lock-add-keywords nil git-commit-font-lock-keywords t))
 
 (defun git-commit-propertize-diff ()
