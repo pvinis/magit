@@ -167,11 +167,34 @@ PATH also becomes the name."
 ;;;; Update
 
 ;;;###autoload
-(defun magit-submodule-update (module method &optional opts)
+(defun magit-submodule-update (module method)
   "Update MODULE by METHOD to recorded target revision.
-METHOD may be `checkout', `merge', `rebase', or `reset'.
-Non-interactively MODULE may be a list of submodules."
+METHOD may be `checkout', `merge', `rebase', or `reset'."
   (interactive (magit-submodule-update-read-args))
+  (magit-submodule--update (list module) method))
+
+;;;###autoload
+(defun magit-submodule-update-remote (module method)
+  "Update MODULE by METHOD to submodule's remote revision.
+METHOD may be `checkout', `merge', `rebase', or `reset'."
+  (interactive (magit-submodule-update-read-args))
+  (magit-submodule--update (list module) method "--remote"))
+
+;;;###autoload
+(defun magit-submodule-update-all (method)
+  "Update all submodules by METHOD to recorded target revision.
+METHOD may be `checkout', `merge', `rebase', or `reset'."
+  (interactive (list (magit-submodule-update-read-method)))
+  (magit-submodule--update (magit-get-submodules) method))
+
+;;;###autoload
+(defun magit-submodule-update-all-remote (method)
+  "Update all submodules by METHOD to submodule's remote revision.
+METHOD may be `checkout', `merge', `rebase', or `reset'."
+  (interactive (list (magit-submodule-update-read-method)))
+  (magit-submodule--update (magit-get-submodules) method "--remote"))
+
+(defun magit-submodule--update (modules method &optional arg)
   (magit-with-toplevel
     (magit-run-git-async
      (--mapcat (list "-c" (format "submodule.%s.update=%s"
@@ -179,29 +202,8 @@ Non-interactively MODULE may be a list of submodules."
                                   (if (eq method 'reset)
                                       "!git reset --keep"
                                     (symbol-name method))))
-               (if (listp module) module (list module)))
-     "submodule" "update" opts "--" module)))
-
-;;;###autoload
-(defun magit-submodule-update-remote (module method)
-  "Update MODULE by METHOD to submodule's remote revision.
-METHOD may be `checkout', `merge', `rebase', or `reset'."
-  (interactive (magit-submodule-update-read-args))
-  (magit-submodule-update module method "--remote"))
-
-;;;###autoload
-(defun magit-submodule-update-all (method)
-  "Update all submodules by METHOD to recorded target revision.
-METHOD may be `checkout', `merge', `rebase', or `reset'."
-  (interactive (list (magit-submodule-update-read-method)))
-  (magit-submodule-update (magit-get-submodules) method nil))
-
-;;;###autoload
-(defun magit-submodule-update-all-remote (method)
-  "Update all submodules by METHOD to submodule's remote revision.
-METHOD may be `checkout', `merge', `rebase', or `reset'."
-  (interactive (list (magit-submodule-update-read-method)))
-  (magit-submodule-update (magit-get-submodules) method t))
+               modules)
+     "submodule" "update" arg "--" module)))
 
 (defun magit-submodule-update-read-method (&optional prompt)
   (magit-read-char-case (or prompt "Update submodules by ") t
