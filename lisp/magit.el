@@ -1004,9 +1004,14 @@ Type \\[magit-reset] to reset HEAD to the commit at point.
   :group 'magit-refs
   (hack-dir-local-variables-non-file-buffer))
 
-;;;###autoload (autoload 'magit-show-refs-popup "magit" nil t)
-(magit-define-popup magit-show-refs-popup
-  "Popup console for `magit-show-refs'."
+;;;###autoload (autoload 'magit-list-references "magit" nil t)
+(magit-define-popup magit-list-references
+  "Show a buffer that lists branches and tags.
+
+When invoked with a prefix argument then use a popup that allows
+specifying what references are displayed and how.  When invoked
+from a references buffer, then always use a popup, regardless of
+whether a prefix argument is used or not."
   'magit-refs
   :man-page "git-branch"
   :switches '((?m "Merged to HEAD"            "--merged")
@@ -1024,7 +1029,10 @@ Type \\[magit-reset] to reset HEAD to the commit at point.
               (?o "Show refs, comparing them with other branch"
                   magit-show-refs))
   :default-action 'magit-show-refs-head
-  :use-prefix 'popup)
+  :use-prefix (lambda ()
+                (if (derived-mode-p 'magit-refs-mode)
+                    (if current-prefix-arg 'popup 'default)
+                  'popup)))
 
 (defun magit-read-ref-sort (prompt initial-input)
   (magit-completing-read prompt
@@ -1036,7 +1044,7 @@ Type \\[magit-reset] to reset HEAD to the commit at point.
 (defun magit-show-refs-head (&optional args)
   "List and compare references in a dedicated buffer.
 Refs are compared with `HEAD'."
-  (interactive (list (magit-show-refs-arguments)))
+  (interactive (list (magit-list-references-arguments)))
   (magit-show-refs nil args))
 
 ;;;###autoload
@@ -1044,7 +1052,7 @@ Refs are compared with `HEAD'."
   "List and compare references in a dedicated buffer.
 Refs are compared with the current branch or `HEAD' if
 it is detached."
-  (interactive (list (magit-show-refs-arguments)))
+  (interactive (list (magit-list-references-arguments)))
   (magit-show-refs (magit-get-current-branch) args))
 
 ;;;###autoload
@@ -1052,7 +1060,7 @@ it is detached."
   "List and compare references in a dedicated buffer.
 Refs are compared with a branch read from the user."
   (interactive (list (magit-read-other-branch "Compare with")
-                     (magit-show-refs-arguments)))
+                     (magit-list-references-arguments)))
   (magit-mode-setup #'magit-refs-mode ref args))
 
 (defun magit-refs-refresh-buffer (&rest _ignore)
@@ -2977,7 +2985,7 @@ Currently this only adds the following key bindings.
              (?w "Apply patches"   magit-am-popup)
              (?W "Format patches"  magit-patch-popup)
              (?X "Resetting"       magit-reset-popup)
-             (?y "Show Refs"       magit-show-refs-popup)
+             (?y "Show Refs"       magit-list-references)
              (?z "Stashing"        magit-stash-popup)
              (?! "Running"         magit-run-popup)
              "Applying changes"
