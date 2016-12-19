@@ -167,6 +167,11 @@ will be deprecated eventually.
 @node Usage
 @chapter Usage
 
+@menu
+* Customizing existing popups::
+* Other options::
+@end menu
+
 Every popup buffers created with a prefix command contains a section
 named "Actions" listing the available suffix commands.  Most buffers
 also contain a "Switches" and/or an "Options" section which list the
@@ -474,6 +479,11 @@ To emphasize the default action by making it bold use this:
 
 @node Defining prefix and suffix commands
 @chapter Defining prefix and suffix commands
+
+@menu
+* Defining prefix commands::
+* Defining suffix commands::
+@end menu
 
 If you write an extension for Magit then you should use this library
 now and later when @code{transient} is released port to that.

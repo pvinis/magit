@@ -389,6 +389,12 @@ commands are implemented on top of Git plumbing commands.
 @node Installation
 @chapter Installation
 
+@menu
+* Installing from an Elpa archive::
+* Installing from the Git repository::
+* Post-installation tasks::
+@end menu
+
 Magit can be installed using Emacs' package manager or manually from
 its development repository.
 
@@ -677,6 +683,15 @@ You might also want to enable @code{global-magit-file-mode} (see @ref{Minor mode
 
 @node Modes and Buffers
 @section Modes and Buffers
+
+@menu
+* Switching Buffers::
+* Naming Buffers::
+* Quitting Windows::
+* Automatic Refreshing of Magit Buffers::
+* Automatic Saving of File-Visiting Buffers::
+* Automatic Reverting of File-Visiting Buffers::
+@end menu
 
 Magit provides several major-modes.  For each of these modes there
 usually exists only one buffer per repository.  Separate modes and
@@ -1224,6 +1239,14 @@ buffer) and you would not be asked whether you want to save the buffer
 
 @node Sections
 @section Sections
+
+@menu
+* Section movement::
+* Section visibility::
+* Section hooks::
+* Section types and values::
+* Section options::
+@end menu
 
 Magit buffers are organized into nested sections, which can be
 collapsed and expanded, similar to how sections are handled in Org
@@ -1886,6 +1909,18 @@ used every time Magit runs Git for any purpose.
 @node Inspecting
 @chapter Inspecting
 
+@menu
+* Status buffer::
+* Repository list::
+* Logging::
+* Diffing::
+* Ediffing::
+* References buffer::
+* Bisecting::
+* Visiting blobs::
+* Blaming::
+@end menu
+
 The functionality provided by Magit can be roughly divided into three
 groups: inspecting existing data, manipulating existing data or adding
 new data, and transferring data.  Of course that is a rather crude
@@ -1916,6 +1951,12 @@ described later.
 
 @node Status buffer
 @section Status buffer
+
+@menu
+* Status sections::
+* Status header sections::
+* Status options::
+@end menu
 
 While other Magit buffers contain e.g. one particular diff or one
 particular log, the status buffer contains the diffs for staged and
@@ -2402,6 +2443,15 @@ but not its push branch.
 
 @node Logging
 @section Logging
+
+@menu
+* Refreshing logs::
+* Log Buffer::
+* Log Margin::
+* Select from log::
+* Reflog::
+* Cherries::
+@end menu
 
 The status buffer contains logs for the unpushed and unpulled commits,
 but that obviously isn't enough.  The prefix command @code{magit-log-popup},
@@ -2931,6 +2981,13 @@ is shown, then this specifies how much space is used to do so.
 
 @node Diffing
 @section Diffing
+
+@menu
+* Refreshing diffs::
+* Diff buffer::
+* Diff options::
+* Revision buffer::
+@end menu
 
 The status buffer contains diffs for the staged and unstaged commits,
 but that obviously isn't enough.  The prefix command @code{magit-diff-popup},
@@ -3475,6 +3532,10 @@ that were created using a Magit command.
 
 @node References buffer
 @section References buffer
+
+@menu
+* References sections::
+@end menu
 
 @table @asis
 @kindex y
@@ -4051,6 +4112,10 @@ then ask the user every time she clones a repository.
 @node Staging and unstaging
 @section Staging and unstaging
 
+@menu
+* Staging from file-visiting buffers::
+@end menu
+
 Like Git, Magit can of course stage and unstage complete files.
 Unlike Git, it also allows users to gracefully un-/stage
 individual hunks and even just part of a hunk.  To stage individual
@@ -4267,6 +4332,11 @@ appropriate (i.e. when @code{git apply} is used internally).
 
 @node Committing
 @section Committing
+
+@menu
+* Initiating a commit::
+* Editing commit messages::
+@end menu
 
 When the user initiates a commit, Magit calls @code{git commit} without any
 arguments, so Git has to get it from the user.  It creates the file
@@ -5429,6 +5499,11 @@ truely complex conflicts, the latter is usually overkill.
 @node Rebasing
 @section Rebasing
 
+@menu
+* Editing rebase sequences::
+* Information about in-progress rebase::
+@end menu
+
 Also see 
 @ifinfo
 @ref{git-rebase,,,gitman,}.
@@ -5891,6 +5966,10 @@ commits which have already been applied.
 
 @node Cherry picking
 @section Cherry picking
+
+@menu
+* Reverting::
+@end menu
 
 Also see 
 @ifinfo
@@ -7415,6 +7494,11 @@ Kill the current buffer.
 @node Customizing
 @chapter Customizing
 
+@menu
+* Per-repository configuration::
+* Essential settings::
+@end menu
+
 Both Git and Emacs are highly customizable.  Magit is both a Git
 porcelain as well as an Emacs package, so it makes sense to customize
 it using both Git variables as well as Emacs options.  However this
@@ -7778,6 +7862,11 @@ command provided by your own Magit extension, then checkout
 
 @node Calling Git
 @section Calling Git
+
+@menu
+* Getting a value from Git::
+* Calling Git for effect::
+@end menu
 
 Magit provides many specialized functions for calling Git.  All of
 these functions are defined in either @code{magit-git.el} or @code{magit-process.el}
